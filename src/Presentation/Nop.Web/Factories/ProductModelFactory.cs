@@ -14,6 +14,7 @@ using Nop.Core.Domain.Security;
 using Nop.Core.Domain.Seo;
 using Nop.Core.Domain.Vendors;
 using Nop.Services.Catalog;
+using Nop.Services.Common;
 using Nop.Services.Customers;
 using Nop.Services.Directory;
 using Nop.Services.Helpers;
@@ -41,6 +42,7 @@ namespace Nop.Web.Factories
         private readonly CaptchaSettings _captchaSettings;
         private readonly CatalogSettings _catalogSettings;
         private readonly CustomerSettings _customerSettings;
+        private readonly IAddressService _addressService;
         private readonly ICategoryService _categoryService;
         private readonly ICurrencyService _currencyService;
         private readonly ICustomerService _customerService;
@@ -79,6 +81,7 @@ namespace Nop.Web.Factories
         public ProductModelFactory(CaptchaSettings captchaSettings,
             CatalogSettings catalogSettings,
             CustomerSettings customerSettings,
+            IAddressService addressService,
             ICategoryService categoryService,
             ICurrencyService currencyService,
             ICustomerService customerService,
@@ -110,6 +113,7 @@ namespace Nop.Web.Factories
             SeoSettings seoSettings,
             VendorSettings vendorSettings)
         {
+            _addressService = addressService;
             _captchaSettings = captchaSettings;
             _catalogSettings = catalogSettings;
             _customerSettings = customerSettings;
@@ -1216,12 +1220,14 @@ namespace Nop.Web.Factories
                 if (vendor != null && !vendor.Deleted && vendor.Active)
                 {
                     model.ShowVendor = true;
+                    var address = _addressService.GetAddressById(vendor.AddressId);
 
                     model.VendorModel = new VendorBriefInfoModel
                     {
                         Id = vendor.Id,
                         Name = _localizationService.GetLocalized(vendor, x => x.Name),
                         SeName = _urlRecordService.GetSeName(vendor),
+                        Telephone = address.PhoneNumber
                     };
                 }
             }

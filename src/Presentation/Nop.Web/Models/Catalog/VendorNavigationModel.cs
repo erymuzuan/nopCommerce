@@ -18,7 +18,7 @@ namespace Nop.Web.Models.Catalog
     public partial class VendorBriefInfoModel : BaseNopEntityModel
     {
         public string Name { get; set; }
-
+        public string Telephone { get; set; }
         public string SeName { get; set; }
     }
 }

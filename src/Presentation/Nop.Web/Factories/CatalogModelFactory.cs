@@ -44,6 +44,7 @@ namespace Nop.Web.Factories
         private readonly DisplayDefaultMenuItemSettings _displayDefaultMenuItemSettings;
         private readonly ForumSettings _forumSettings;
         private readonly IActionContextAccessor _actionContextAccessor;
+        private readonly IAddressService _addressService;
         private readonly ICategoryService _categoryService;
         private readonly ICategoryTemplateService _categoryTemplateService;
         private readonly ICurrencyService _currencyService;
@@ -79,6 +80,7 @@ namespace Nop.Web.Factories
             DisplayDefaultMenuItemSettings displayDefaultMenuItemSettings,
             ForumSettings forumSettings,
             IActionContextAccessor actionContextAccessor,
+            IAddressService addressService,
             ICategoryService categoryService,
             ICategoryTemplateService categoryTemplateService,
             ICurrencyService currencyService,
@@ -110,6 +112,7 @@ namespace Nop.Web.Factories
             _displayDefaultMenuItemSettings = displayDefaultMenuItemSettings;
             _forumSettings = forumSettings;
             _actionContextAccessor = actionContextAccessor;
+            _addressService = addressService;
             _categoryService = categoryService;
             _categoryTemplateService = categoryTemplateService;
             _currencyService = currencyService;
@@ -733,7 +736,8 @@ namespace Nop.Web.Factories
                 string.Join(",", _workContext.CurrentCustomer.GetCustomerRoleIds()),
                 _storeContext.CurrentStore.Id);
 
-            return _cacheManager.Get(cacheKey, () => {
+            return _cacheManager.Get(cacheKey, () =>
+            {
 
                 var categories = PrepareCategorySimpleModels();
 
@@ -1106,11 +1110,13 @@ namespace Nop.Web.Factories
 
                 foreach (var vendor in vendors)
                 {
+                    var address = _addressService.GetAddressById(vendor.AddressId);
                     model.Vendors.Add(new VendorBriefInfoModel
                     {
                         Id = vendor.Id,
                         Name = _localizationService.GetLocalized(vendor, x => x.Name),
                         SeName = _urlRecordService.GetSeName(vendor),
+                        Telephone = address.PhoneNumber
                     });
                 }
                 return model;
